@@ -9,7 +9,7 @@ BLACK = (0, 0, 0)
 # Las dimensiones y el nombre de la ventana
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Pong')
+pygame.display.set_caption('Atari Pong')
 
 # Se define el reloj y los FPS de nuestro juego
 reloj = pygame.time.Clock()
