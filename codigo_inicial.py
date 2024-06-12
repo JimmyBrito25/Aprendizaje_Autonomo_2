@@ -38,6 +38,9 @@ juego_pausa=False
 #El 0 es para Reanudar, 1 es para Salir
 opcion_seleccionada=0
 
+#Efecto de sonido cuando hay colisión de la pelota
+sonido_colision = pygame.mixer.Sound('efecto_bola.wav')
+
 # Dibujamos las paletas y la pelota que aparecerán en el juego
 def draw_objects():
     screen.fill(BLACK)
@@ -75,10 +78,12 @@ def move_ball():
 
     if pos_bola[1] <= 0 or pos_bola[1] >= HEIGHT - BALL_SIZE:
         vel_pel[1] = -vel_pel[1]
+        sonido_colision.play()
 
     if (pos_bola[0] <= pos_jugador1[0] + PADDLE_WIDTH and pos_jugador1[1] < pos_bola[1] < pos_jugador1[1] + PADDLE_HEIGHT) or \
        (pos_bola[0] >= pos_jugador2[0] - BALL_SIZE and pos_jugador2[1] < pos_bola[1] < pos_jugador2[1] + PADDLE_HEIGHT):
         vel_pel[0] = -vel_pel[0]
+        sonido_colision.play()
 
     if pos_bola[0] <= 0:
         punt_jugador2 += 1
