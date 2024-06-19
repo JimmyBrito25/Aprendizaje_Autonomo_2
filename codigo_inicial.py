@@ -1,5 +1,6 @@
 import pygame
 import sys
+
 pygame.init()
 
 # Aquí definimos los colores que se utilizarán en el juego
@@ -28,17 +29,24 @@ vel_pel = [5, 5]
 # Velocidad de las paletas
 vel_paletas = 7
 
-#Empiezan las puntuaciones
-punt_jugador1=0
-punt_jugador2=0
+# Empiezan las puntuaciones
+punt_jugador1 = 0
+punt_jugador2 = 0
 
-#Los estados de mi juego
-juego_pausa=False
+# Los estados de mi juego
+juego_pausa = False
 
-#El 0 es para Reanudar, 1 es para Salir
-opcion_seleccionada=0
+# El 0 es para Reanudar, 1 es para Salir
+opcion_seleccionada = 0
 
-#Efecto de sonido cuando hay colisión de la pelota
+# Estado inicial del juego
+menu_inicial = True
+opcion_menu_inicial = 0
+
+# Imagen de fondo del menú de pausa
+fondo_menu_inicial = pygame.image.load('fondo_menu_resized.jpg')
+
+#Efecto de sonido colisión de la pelota
 sonido_colision = pygame.mixer.Sound('efecto_bola.wav')
 
 # Dibujamos las paletas y la pelota que aparecerán en el juego
@@ -50,15 +58,15 @@ def draw_objects():
     pygame.draw.aaline(screen, WHITE, (WIDTH // 2, 0), (WIDTH // 2, HEIGHT))
     draw_scores()
     pygame.display.flip()
-    
+
 def draw_scores():
-#Dibujamos las puntuaciones de los jugadores en la pantalla.
+    # Dibujamos las puntuaciones de los jugadores en la pantalla.
     font = pygame.font.Font(None, 74)
     text = font.render(str(punt_jugador1), 1, WHITE)
     screen.blit(text, (250, 10))
     text = font.render(str(punt_jugador2), 1, WHITE)
     screen.blit(text, (WIDTH - 250, 10))
-    
+
 # Aquí definimos las teclas de movimiento
 def move_paddles(keys):
     if keys[pygame.K_w] and pos_jugador1[1] > 0:
@@ -92,12 +100,12 @@ def move_ball():
         punt_jugador1 += 1
         reset_ball()
 
-#Reinicia la posición y velocidad de la pelota
+# Reinicia la posición y velocidad de la pelota
 def reset_ball():
     pos_bola[0], pos_bola[1] = WIDTH // 2, HEIGHT // 2
     vel_pel[0] = -vel_pel[0]
 
-#Esta función dibuja el menú de pausa
+# Esta función dibuja el menú de pausa
 def draw_pause_menu():
     font = pygame.font.Font(None, 74)
     texto_reanudar = font.render("Reanudar", True, GRAY if opcion_seleccionada != 0 else WHITE)
@@ -108,41 +116,67 @@ def draw_pause_menu():
 
     pygame.display.flip()
 
+# Esta función dibuja el menú principal del juego
+def draw_initial_menu():
+    screen.blit(fondo_menu_inicial, (0, 0))
+    font = pygame.font.Font(None, 74)
+    texto_iniciar = font.render("Iniciar juego", True, GRAY if opcion_menu_inicial != 0 else WHITE)
+    texto_salir = font.render("Salir", True, GRAY if opcion_menu_inicial != 1 else WHITE)
 
-#Esta es la función principal que va a ejecutar el juego
+    screen.blit(texto_iniciar, (WIDTH // 2 - texto_iniciar.get_width() // 2, HEIGHT // 2 - 100))
+    screen.blit(texto_salir, (WIDTH // 2 - texto_salir.get_width() // 2, HEIGHT // 2))
+
+    pygame.display.flip()
+
+# Esta es la función principal que va a ejecutar el juego
 def main():
-    global juego_pausa, opcion_seleccionada
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+    global juego_pausa, opcion_seleccionada, menu_inicial, opcion_menu_inicial
 
-        if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN and not juego_pausa:
-                    juego_pausa = True
-                elif event.key == pygame.K_RETURN and juego_pausa:
-                    if opcion_seleccionada == 0:
-                        juego_pausa = False
-                    elif opcion_seleccionada == 1:
-                        pygame.quit()
-                        sys.exit()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
-                if juego_pausa:
+            if event.type == pygame.KEYDOWN:
+                if menu_inicial:
+                    if event.key == pygame.K_RETURN:
+                        if opcion_menu_inicial == 0:
+                            menu_inicial = False
+                        elif opcion_menu_inicial == 1:
+                            pygame.quit()
+                            sys.exit()
+                    if event.key == pygame.K_UP:
+                        opcion_menu_inicial = (opcion_menu_inicial - 1) % 2
+                    if event.key == pygame.K_DOWN:
+                        opcion_menu_inicial = (opcion_menu_inicial + 1) % 2
+                elif juego_pausa:
+                    if event.key == pygame.K_RETURN:
+                        if opcion_seleccionada == 0:
+                            juego_pausa = False
+                        elif opcion_seleccionada == 1:
+                            pygame.quit()
+                            sys.exit()
                     if event.key == pygame.K_UP:
                         opcion_seleccionada = (opcion_seleccionada - 1) % 2
                     if event.key == pygame.K_DOWN:
                         opcion_seleccionada = (opcion_seleccionada + 1) % 2
+                else:
+                    if event.key == pygame.K_RETURN:
+                        juego_pausa = True
 
-    keys = pygame.key.get_pressed()
-    if not juego_pausa:
+        keys = pygame.key.get_pressed()
+        if menu_inicial:
+            draw_initial_menu()
+        elif juego_pausa:
+            draw_pause_menu()
+        else:
             move_paddles(keys)
             move_ball()
             draw_objects()
-    else:
-            draw_pause_menu()
-    clock.tick(FPS)
 
-    #Se ejecuta el juego
-    if __name__ == "__main__":
-        main()
+        clock.tick(FPS)
+
+# Se ejecuta el juego
+if __name__ == "__main__":
+    main()
