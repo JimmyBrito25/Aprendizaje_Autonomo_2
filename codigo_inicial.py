@@ -67,6 +67,7 @@ def draw_scores():
     text = font.render(str(punt_jugador2), 1, WHITE)
     screen.blit(text, (WIDTH - 250, 10))
 
+
 # Aquí definimos las teclas de movimiento
 def move_paddles(keys):
     if keys[pygame.K_w] and pos_jugador1[1] > 0:
@@ -128,9 +129,18 @@ def draw_initial_menu():
 
     pygame.display.flip()
 
+#Aquí se dibuja el mensaje del ganador
+def draw_winner_message(winner):
+    font = pygame.font.Font(None, 74)
+    texto_ganador = font.render(f"{winner} Ganó", True, WHITE)
+
+    screen.fill(BLACK)
+    screen.blit(texto_ganador, (WIDTH // 2 - texto_ganador.get_width() // 2, HEIGHT // 2))
+    pygame.display.flip()
+
 # Esta es la función principal que va a ejecutar el juego
 def main():
-    global juego_pausa, opcion_seleccionada, menu_inicial, opcion_menu_inicial
+    global juego_pausa, opcion_seleccionada, menu_inicial, opcion_menu_inicial, punt_jugador1, punt_jugador2
 
     while True:
         for event in pygame.event.get():
@@ -161,6 +171,10 @@ def main():
                         opcion_seleccionada = (opcion_seleccionada - 1) % 2
                     if event.key == pygame.K_DOWN:
                         opcion_seleccionada = (opcion_seleccionada + 1) % 2
+                elif punt_jugador1 >= 10 or punt_jugador2 >= 10:
+                    if event.key == pygame.K_RETURN:
+                        pygame.quit()
+                        sys.exit()
                 else:
                     if event.key == pygame.K_RETURN:
                         juego_pausa = True
@@ -170,6 +184,10 @@ def main():
             draw_initial_menu()
         elif juego_pausa:
             draw_pause_menu()
+        elif punt_jugador1 >= 10:
+            draw_winner_message("Jugador 1")
+        elif punt_jugador2 >= 10:
+            draw_winner_message("Jugador 2")
         else:
             move_paddles(keys)
             move_ball()
