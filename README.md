@@ -26,5 +26,5 @@ El objetivo de este proyecto es recrear el clásico juego de Atari Pong para dos
 1. Asegúrate de tener `pygame` instalado. Si no lo tienes, puedes instalarlo usando:
 _pip install pygame_
 2. Clona este repositorio o descarga el archivo ZIP y descomprímelo.
-3. Coloca la imagen `fondo_menu_inicial.jpg` y el archivo de sonido `efecto_bola.wav` en el mismo directorio que el código principal.
+3. Coloca la imagen `fondo_menu_resized.jpg` y el archivo de sonido `efecto_bola.wav` en el mismo directorio que el código principal.
 4. Ejecuta el archivo principal del juego:
